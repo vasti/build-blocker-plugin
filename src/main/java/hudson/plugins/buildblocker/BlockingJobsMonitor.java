@@ -27,6 +27,7 @@ package hudson.plugins.buildblocker;
 import hudson.model.Computer;
 import hudson.model.Executor;
 import hudson.model.Queue;
+import hudson.model.queue.SubTask;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
@@ -61,7 +62,7 @@ public class BlockingJobsMonitor {
      * Returns the name of the first blocking job. If not found, it returns null.
      * @return the name of the first blocking job.
      */
-    public String getBlockingJob() {
+    public SubTask getBlockingJob() {
         if(this.blockingJobs == null) {
             return null;
         }
@@ -75,11 +76,11 @@ public class BlockingJobsMonitor {
                 if(executor.isBusy()) {
                     Queue.Executable currentExecutable = executor.getCurrentExecutable();
 
-                    String activeJobName = currentExecutable.getParent().getDisplayName();
+                    SubTask subTask = currentExecutable.getParent();
 
                     for (String blockingJob : this.blockingJobs) {
-                        if(activeJobName.matches(blockingJob)) {
-                            return activeJobName;
+                        if(subTask.getDisplayName().matches(blockingJob)) {
+                            return subTask;
                         }
                     }
                 }

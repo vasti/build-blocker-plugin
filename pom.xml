@@ -43,7 +43,7 @@
   <licenses>
     <license>
       <name>The MIT license</name>
-      <url>https://github.com/ffromm/build-blocker-plugin/raw/master/LICENSE.txt</url>
+      <url>https://github.com/jencinsci/build-blocker-plugin/raw/master/LICENSE.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -57,9 +57,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/ffromm/build-blocker-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:ffromm/build-blocker-plugin.git</developerConnection>
-    <url>https://github.com/ffromm/build-blocker-plugin</url>
+    <connection>scm:git:git://github.com/jenkinsci/build-blocker-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/build-blocker-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/build-blocker-plugin</url>
   </scm>
 
   <repositories>
@@ -88,12 +88,9 @@
   </distributionManagement>
 
   <properties>
-    <!-- http://docs.codehaus.org/display/MAVENUSER/POM+Element+for+Source+File+Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileTarget>1.6</compileTarget>
-    <!-- define all plugin versions -->
     <maven.version>3.0.4</maven.version>
   </properties>
-
 
 </project>

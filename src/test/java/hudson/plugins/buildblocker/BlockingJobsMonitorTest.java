@@ -30,9 +30,11 @@ import hudson.model.labels.LabelAtom;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.SlaveComputer;
 import hudson.tasks.Shell;
+import jenkins.model.Jenkins;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Unit tests
@@ -44,6 +46,9 @@ public class BlockingJobsMonitorTest extends HudsonTestCase {
      * @throws Exception
      */
     public void testConstructor() throws Exception {
+        // clear queue from preceding tests
+        Jenkins.getInstance().getQueue().clear();
+
         // init slave
         LabelAtom label = new LabelAtom("label");
         DumbSlave slave = this.createSlave(label);
@@ -56,14 +61,16 @@ public class BlockingJobsMonitorTest extends HudsonTestCase {
         String blockingJobName = "blockingJob";
 
         FreeStyleProject blockingProject = this.createFreeStyleProject(blockingJobName);
+        blockingProject.setAssignedLabel(label);
 
-        Shell shell = new Shell("echo \"sleeping...\"\nsleep 1\necho \"done\"");
+        Shell shell = new Shell("sleep 1");
         blockingProject.getBuildersList().add(shell);
 
         Future<FreeStyleBuild> future = blockingProject.scheduleBuild2(0);
 
+        // wait until blocking job started
         while(! slave.getComputer().getExecutors().get(0).isBusy()) {
-            // wait until job is started
+            TimeUnit.SECONDS.sleep(1);
         }
 
         BlockingJobsMonitor blockingJobsMonitorUsingNull = new BlockingJobsMonitor(null);
@@ -73,16 +80,17 @@ public class BlockingJobsMonitorTest extends HudsonTestCase {
         assertNull(blockingJobsMonitorNotMatching.getBlockingJob());
 
         BlockingJobsMonitor blockingJobsMonitorUsingFullName = new BlockingJobsMonitor(blockingJobName);
-        assertEquals(blockingJobName, blockingJobsMonitorUsingFullName.getBlockingJob());
+        assertEquals(blockingJobName, blockingJobsMonitorUsingFullName.getBlockingJob().getDisplayName());
 
         BlockingJobsMonitor blockingJobsMonitorUsingRegex = new BlockingJobsMonitor("block.*");
-        assertEquals(blockingJobName, blockingJobsMonitorUsingRegex.getBlockingJob());
+        assertEquals(blockingJobName, blockingJobsMonitorUsingRegex.getBlockingJob().getDisplayName());
 
         BlockingJobsMonitor blockingJobsMonitorUsingMoreLines = new BlockingJobsMonitor("xxx\nblock.*\nyyy");
-        assertEquals(blockingJobName, blockingJobsMonitorUsingMoreLines.getBlockingJob());
+        assertEquals(blockingJobName, blockingJobsMonitorUsingMoreLines.getBlockingJob().getDisplayName());
 
+        // wait until blocking job stopped
         while (! future.isDone()) {
-            // wait for blocking job to finish
+            TimeUnit.SECONDS.sleep(1);
         }
 
         assertNull(blockingJobsMonitorUsingFullName.getBlockingJob());

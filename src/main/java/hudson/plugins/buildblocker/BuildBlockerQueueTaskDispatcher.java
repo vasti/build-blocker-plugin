@@ -29,9 +29,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Queue;
 import hudson.model.queue.CauseOfBlockage;
 import hudson.model.queue.QueueTaskDispatcher;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import hudson.model.queue.SubTask;
 
 /**
  * Queue task dispatcher that evaluates the given blocking jobs in the config of the
@@ -39,10 +37,6 @@ import java.util.logging.Logger;
  */
 @Extension
 public class BuildBlockerQueueTaskDispatcher extends QueueTaskDispatcher {
-    /**
-     * the logger
-     */
-    private static final Logger LOG = Logger.getLogger(BuildBlockerQueueTaskDispatcher.class.getName());
 
     /**
      * Called whenever {@link hudson.model.Queue} is considering if {@link hudson.model.Queue.Item} is ready to execute immediately
@@ -82,11 +76,10 @@ public class BuildBlockerQueueTaskDispatcher extends QueueTaskDispatcher {
             if(property != null) {
                 String blockingJobs = property.getBlockingJobs();
 
-                String blockingJob = new BlockingJobsMonitor(blockingJobs).getBlockingJob();
+                SubTask subTask = new BlockingJobsMonitor(blockingJobs).getBlockingJob();
 
-                if(blockingJob != null) {
-                    LOG.log(Level.WARNING, "build blocked because job " + blockingJob + " is running.");
-                    return CauseOfBlockage.fromMessage(Messages._BlockingJobIsRunning(blockingJob));
+                if(subTask != null) {
+                    return CauseOfBlockage.fromMessage(Messages._BlockingJobIsRunning(subTask.getDisplayName()));
                 }
             }
         }
