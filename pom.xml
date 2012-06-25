@@ -30,7 +30,6 @@
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
     <version>1.447</version>
-    <!-- which version of Jenkins is this plugin built against? -->
   </parent>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -38,6 +37,7 @@
   <name>Build Blocker Plugin</name>
   <version>1.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Build+Blocker+Plugin</url>
 
   <licenses>
     <license>
