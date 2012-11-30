@@ -77,9 +77,10 @@ public class BlockingJobsMonitor {
                     Queue.Executable currentExecutable = executor.getCurrentExecutable();
 
                     SubTask subTask = currentExecutable.getParent();
+                    Queue.Task task = subTask.getOwnerTask();
 
                     for (String blockingJob : this.blockingJobs) {
-                        if(subTask.getDisplayName().matches(blockingJob)) {
+                        if(task.getFullDisplayName().matches(blockingJob)) {
                             return subTask;
                         }
                     }
