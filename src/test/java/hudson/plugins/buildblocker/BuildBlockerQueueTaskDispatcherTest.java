@@ -48,6 +48,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         // run a more complex test that tests the behavior of
         // the class inside an actual jenkins
         MultipleExecutorTest();
+        SelfExcludingJobsTest();
     }
 
     /**
@@ -132,6 +133,43 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         Run theRun1 = theJob1.getLastBuild();
         Run theRun2 = theJob2.getLastBuild();
         assertTrue( theRun1.getTimeInMillis() + theRun1.getDuration() <= theRun2.getTimeInMillis() );
+
+        // restore changed settings
+        Hudson.getInstance().setNumExecutors( theOldNumExecutors );
+        theJob2.delete();
+        theJob1.delete();
+    }
+
+    private void SelfExcludingJobsTest() throws Exception {
+
+        BuildBlockerProperty theProperty = new BuildBlockerProperty();
+        theProperty.setBlockingJobs( "SelfExcluding_.*" );
+
+        FreeStyleProject theJob1 = createFreeStyleProject( "SelfExcluding_Job1" );
+        theJob1.addProperty( theProperty );
+        assertTrue( theJob1.getBuilds().isEmpty() );
+
+        FreeStyleProject theJob2 = createFreeStyleProject( "SelfExcluding_Job2" );
+        theJob2.addProperty( theProperty );
+        assertTrue( theJob1.getBuilds().isEmpty() );
+
+        // allow executing two simultanious jobs
+        int theOldNumExecutors = Hudson.getInstance().getNumExecutors();
+        Hudson.getInstance().setNumExecutors( 2 );
+
+        Future<FreeStyleBuild> theFuture1 = theJob1.scheduleBuild2( 0 );
+        Future<FreeStyleBuild> theFuture2 = theJob2.scheduleBuild2( 0 );
+
+        long theStartTime = System.currentTimeMillis();
+        long theEndTime = theStartTime;
+        while ( ( !theFuture1.isDone() || !theFuture2.isDone() )
+        		&& theEndTime < theStartTime + 5000 )
+        {
+        	theEndTime = System.currentTimeMillis();
+        }
+
+        // if more then five seconds have passed, we assume its a deadlock.
+        assertTrue( theEndTime < theStartTime + 5000 );
 
         // restore changed settings
         Hudson.getInstance().setNumExecutors( theOldNumExecutors );

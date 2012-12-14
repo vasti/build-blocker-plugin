@@ -60,9 +60,11 @@ public class BlockingJobsMonitor {
 
     /**
      * Returns the name of the first blocking job. If not found, it returns null.
+     * @param item The queue item for which we are checking whether it can run or not.
+     *        or null if we are not checking a job from the queue (currently only used by testing).
      * @return the name of the first blocking job.
      */
-    public SubTask getBlockingJob() {
+    public SubTask getBlockingJob(Queue.Item item) {
         if(this.blockingJobs == null) {
             return null;
         }
@@ -95,12 +97,15 @@ public class BlockingJobsMonitor {
          */
         List<Queue.BuildableItem> buildableItems
             = Jenkins.getInstance().getQueue().getBuildableItems();
-        for (Queue.BuildableItem item : buildableItems) {
-            for (String blockingJob : this.blockingJobs) {
-                if(item.task.getFullDisplayName().matches(blockingJob)) {
-                    return item.task;
-                }
-            }
+
+        for (Queue.BuildableItem buildableItem : buildableItems) {
+        	if(item != buildableItem) {
+	            for (String blockingJob : this.blockingJobs) {
+	                if(buildableItem.task.getFullDisplayName().matches(blockingJob)) {
+	                    return buildableItem.task;
+	                }
+	            }
+        	}
         }
 
         return null;
