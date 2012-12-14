@@ -131,7 +131,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         // check if job2 was not started before job1 was finished
         Run theRun1 = theJob1.getLastBuild();
         Run theRun2 = theJob2.getLastBuild();
-        //assertTrue( theRun1.getTimeInMillis() + theRun1.getDuration() <= theRun2.getTimeInMillis() );
+        assertTrue( theRun1.getTimeInMillis() + theRun1.getDuration() <= theRun2.getTimeInMillis() );
 
         // restore changed settings
         Hudson.getInstance().setNumExecutors( theOldNumExecutors );
