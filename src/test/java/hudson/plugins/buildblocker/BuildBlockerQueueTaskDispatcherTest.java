@@ -42,15 +42,6 @@ import java.util.concurrent.Future;
  */
 public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
 
-    public void runTest() throws java.lang.Throwable {
-        // run the standard unit tests
-        super.runTest();
-        // run a more complex test that tests the behavior of
-        // the class inside an actual jenkins
-        MultipleExecutorTest();
-        SelfExcludingJobsTest();
-    }
-
     /**
      * One test for all for faster execution.
      * @throws Exception
@@ -102,7 +93,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         }
     }
 
-    private void MultipleExecutorTest() throws Exception {
+    public void testMultipleExecutors() throws Exception {
 
         // Job1 runs for 1 second, no dependencies
         FreeStyleProject theJob1 = createFreeStyleProject( "MultipleExecutor_Job1" );
@@ -140,7 +131,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         theJob1.delete();
     }
 
-    private void SelfExcludingJobsTest() throws Exception {
+    public void testSelfExcludingJobs() throws Exception {
 
         BuildBlockerProperty theProperty = new BuildBlockerProperty();
         theProperty.setBlockingJobs( "SelfExcluding_.*" );
