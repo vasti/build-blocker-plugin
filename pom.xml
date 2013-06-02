@@ -24,68 +24,137 @@
   THE SOFTWARE.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.447</version>
+    </parent>
+
     <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>1.447</version>
-  </parent>
+    <artifactId>build-blocker-plugin</artifactId>
+    <name>Build Blocker Plugin</name>
+    <version>1.4-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Build+Blocker+Plugin</url>
 
-  <groupId>org.jenkins-ci.plugins</groupId>
-  <artifactId>build-blocker-plugin</artifactId>
-  <name>Build Blocker Plugin</name>
-  <version>1.4-SNAPSHOT</version>
-  <packaging>hpi</packaging>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Build+Blocker+Plugin</url>
+    <licenses>
+        <license>
+            <name>The MIT license</name>
+            <url>https://github.com/jencinsci/build-blocker-plugin/raw/master/LICENSE.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <licenses>
-    <license>
-      <name>The MIT license</name>
-      <url>https://github.com/jencinsci/build-blocker-plugin/raw/master/LICENSE.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+    <developers>
+        <developer>
+            <id>ffromm</id>
+            <name>Frederik Fromm</name>
+            <email>frederik.fromm@gmail.com</email>
+        </developer>
+    </developers>
 
-  <developers>
-    <developer>
-      <id>ffromm</id>
-      <name>Frederik Fromm</name>
-      <email>frederik.fromm@gmail.com</email>
-    </developer>
-  </developers>
+    <scm>
+        <connection>scm:git:https://ffromm@github.com/jenkinsci/build-blocker-plugin.git</connection>
+        <developerConnection>scm:git:https://ffromm@github.com/jenkinsci/build-blocker-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/build-blocker-plugin.git</url>
+    </scm>
 
-  <scm>
-    <connection>scm:git:https://ffromm@github.com/jenkinsci/build-blocker-plugin.git</connection>
-    <developerConnection>scm:git:https://ffromm@github.com/jenkinsci/build-blocker-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/build-blocker-plugin.git</url>
-  </scm>
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <argLine>${argLine}</argLine>
+                            <excludes>
+                                <exclude>**/*IntegrationTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipITs}</skip>
+                            <argLine>${argLine}</argLine>
+                            <includes>
+                                <include>**/*IntegrationTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.6.2.201302030002</version>
+                <configuration>
+                    <skip>${maven.test.skip}</skip>
+                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+                    <output>file</output>
+                    <append>true</append>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-  <distributionManagement>
-    <repository>
-      <id>maven.jenkins-ci.org</id>
-      <url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
-    </repository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>maven.jenkins-ci.org</id>
+            <url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <compileTarget>1.6</compileTarget>
-    <maven.version>3.0.4</maven.version>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compileTarget>1.6</compileTarget>
+        <maven.version>3.0.4</maven.version>
+    </properties>
 
 </project>
