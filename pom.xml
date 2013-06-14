@@ -62,12 +62,11 @@
         <url>https://github.com/jenkinsci/build-blocker-plugin.git</url>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compileTarget>1.6</compileTarget>
+        <maven.version>3.0.4</maven.version>
+    </properties>
 
     <build>
         <plugins>
@@ -114,28 +113,27 @@
                 <configuration>
                     <skip>${maven.test.skip}</skip>
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                     <output>file</output>
                     <append>true</append>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>jacoco-initialize</id>
+                        <id>agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
@@ -150,11 +148,5 @@
             <url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <compileTarget>1.6</compileTarget>
-        <maven.version>3.0.4</maven.version>
-    </properties>
 
 </project>
