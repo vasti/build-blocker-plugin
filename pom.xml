@@ -66,6 +66,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <compileTarget>1.6</compileTarget>
         <maven.version>3.0.4</maven.version>
+        <jacoco.version>0.6.2.201302030002</jacoco.version>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>  <!-- Ensure you run mvn install before sonar:sonar -->
+        <sonar.java.codeCoveragePlugin>jacoco</sonar.java.codeCoveragePlugin>
+        <sonar.surefire.reportsPath>/target/surefire-reports</sonar.surefire.reportsPath>
+        <sonar.jacoco.reportPath>target/jacoco.exec</sonar.jacoco.reportPath>    <!-- This is the default, put here to be explicit -->
+        <sonar.jacoco.itReportPath>target/jacoco-it.exec</sonar.jacoco.itReportPath>
     </properties>
 
     <build>
@@ -109,19 +115,41 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.6.2.201302030002</version>
-                <configuration>
-                    <skip>${maven.test.skip}</skip>
-                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                    <output>file</output>
-                    <append>true</append>
-                </configuration>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
-                        <id>agent</id>
+                        <id>pre-unit-test</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>target/jacoco-it.exec</destFile>
+                            <propertyName>failsafe.argLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>target/jacoco-it.exec</dataFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
