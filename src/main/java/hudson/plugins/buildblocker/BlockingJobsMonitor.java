@@ -24,6 +24,7 @@
 
 package hudson.plugins.buildblocker;
 
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.Computer;
 import hudson.model.Executor;
 import hudson.model.Queue;
@@ -74,12 +75,18 @@ public class BlockingJobsMonitor {
         for (Computer computer : computers) {
             List<Executor> executors = computer.getExecutors();
 
+            executors.addAll(computer.getOneOffExecutors());
+
             for (Executor executor : executors) {
                 if(executor.isBusy()) {
                     Queue.Executable currentExecutable = executor.getCurrentExecutable();
 
                     SubTask subTask = currentExecutable.getParent();
                     Queue.Task task = subTask.getOwnerTask();
+
+                    if (task instanceof MatrixConfiguration) {
+                        task = ((MatrixConfiguration) task).getParent();
+                    }
 
                     for (String blockingJob : this.blockingJobs) {
                         if(task.getFullDisplayName().matches(blockingJob)) {
