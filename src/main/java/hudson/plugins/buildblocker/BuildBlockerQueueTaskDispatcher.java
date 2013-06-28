@@ -25,6 +25,7 @@
 package hudson.plugins.buildblocker;
 
 import hudson.Extension;
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.AbstractProject;
 import hudson.model.Queue;
 import hudson.model.queue.CauseOfBlockage;
@@ -79,7 +80,11 @@ public class BuildBlockerQueueTaskDispatcher extends QueueTaskDispatcher {
                 SubTask subTask = new BlockingJobsMonitor(blockingJobs).getBlockingJob(item);
 
                 if(subTask != null) {
-                    return CauseOfBlockage.fromMessage(Messages._BlockingJobIsRunning(subTask.getDisplayName()));
+                    if(subTask instanceof MatrixConfiguration) {
+                        subTask = ((MatrixConfiguration) subTask).getParent();
+                    }
+
+                    return CauseOfBlockage.fromMessage(Messages._BlockingJobIsRunning(item.getInQueueForString(), subTask.getDisplayName()));
                 }
             }
         }

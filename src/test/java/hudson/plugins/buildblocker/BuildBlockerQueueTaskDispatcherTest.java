@@ -86,7 +86,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         causeOfBlockage = dispatcher.canRun(item);
         assertNotNull(causeOfBlockage);
 
-        assertEquals("Blocking job " + blockingJobName + " is running.", causeOfBlockage.getShortDescription());
+        assertTrue(causeOfBlockage.getShortDescription().contains(" by " + blockingJobName + "."));
 
         while(!(future1.isDone() && future2.isDone() && future3.isDone())) {
             // wait until jobs are done.
