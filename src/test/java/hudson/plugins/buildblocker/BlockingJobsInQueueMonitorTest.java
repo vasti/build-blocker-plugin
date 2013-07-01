@@ -59,7 +59,7 @@ public class BlockingJobsInQueueMonitorTest extends HudsonTestCase {
         blockingJobInQueue.setAssignedLabel(label);
         blockingJobInQueue.getBuildersList().add(new Shell("sleep 1"));
         System.out.println("starting blocking job to stay in queue... " + Jenkins.getInstance().getQueue().getBuildableItems().size());
-        blockingJobInQueue.scheduleBuild2(0);
+        Future<FreeStyleBuild> f3 = blockingJobInQueue.scheduleBuild2(0);
 
         System.out.println("wait till is in queue...");
         while(Jenkins.getInstance().getQueue().getBuildableItems().isEmpty()) {
@@ -71,7 +71,7 @@ public class BlockingJobsInQueueMonitorTest extends HudsonTestCase {
         blockedJob.setAssignedLabel(label);
         blockedJob.getBuildersList().add(new Shell("sleep 5"));
         System.out.println("starting blocked job... " + Jenkins.getInstance().getQueue().getBuildableItems().size());
-        blockedJob.scheduleBuild2(0);
+        Future<FreeStyleBuild> f4 = blockedJob.scheduleBuild2(0);
         System.out.println("started... queue: " + Jenkins.getInstance().getQueue().getBuildableItems().size());
 
         BlockingJobsInQueueMonitor monitor = new BlockingJobsInQueueMonitor(blockingJobInQueueName);
@@ -80,6 +80,22 @@ public class BlockingJobsInQueueMonitorTest extends HudsonTestCase {
         System.out.println("done... queue: " + Jenkins.getInstance().getQueue().getBuildableItems().size());
         System.out.println("blocking job: " + blockingJob);
         assertNotNull(blockingJob);
+
+        System.out.println("f1: " + f1.isDone());
+        System.out.println("f2: " + f2.isDone());
+        System.out.println("f3: " + f3.isDone());
+        System.out.println("f4: " + f4.isDone());
+
+        System.out.println(! (f1.isDone() && f2.isDone()) && f3.isDone() && f4.isDone());
+
+        // wait until blocking job stopped
+        while(! (f1.isDone() && f2.isDone() && f3.isDone() && f4.isDone())) {
+            System.out.println("f1: " + f1.isDone());
+            System.out.println("f2: " + f2.isDone());
+            System.out.println("f3: " + f3.isDone());
+            System.out.println("f4: " + f4.isDone());
+            TimeUnit.SECONDS.sleep(1);
+        }
 
     }
 }
