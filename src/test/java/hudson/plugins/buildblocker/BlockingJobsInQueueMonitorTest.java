@@ -35,65 +35,40 @@ public class BlockingJobsInQueueMonitorTest extends HudsonTestCase {
         FreeStyleProject executorUsing1 = this.createFreeStyleProject("executorUsingJob1");
         executorUsing1.setAssignedLabel(label);
         executorUsing1.getBuildersList().add(new Shell("sleep 5"));
-        System.out.println("starting executor using job 1 ...");
         Future<FreeStyleBuild> f1 = executorUsing1.scheduleBuild2(0);
         FreeStyleProject executorUsing2 = this.createFreeStyleProject("executorUsingJob2");
         executorUsing2.setAssignedLabel(label);
         executorUsing2.getBuildersList().add(new Shell("sleep 5"));
-        System.out.println("starting executor using job 2 ...");
         Future<FreeStyleBuild> f2 = executorUsing2.scheduleBuild2(0);
 
-        System.out.println("waiting till its running...");
         // wait until job started
 
         List<Executor> executors = Jenkins.getInstance().getComputers()[0].getExecutors();
         while(! (executors.get(0).isBusy() && executors.get(1).isBusy())) {
             TimeUnit.SECONDS.sleep(1);
-            System.out.println("... " + f1.isDone() + " - " + executors.get(0).isBusy());
-            System.out.println("... " + f2.isDone() + " - " + executors.get(1).isBusy());
         }
-        System.out.println("runs...");
 
         String blockingJobInQueueName = "blockingJobInQueue";
         FreeStyleProject blockingJobInQueue = this.createFreeStyleProject(blockingJobInQueueName);
         blockingJobInQueue.setAssignedLabel(label);
         blockingJobInQueue.getBuildersList().add(new Shell("sleep 1"));
-        System.out.println("starting blocking job to stay in queue... " + Jenkins.getInstance().getQueue().getBuildableItems().size());
         Future<FreeStyleBuild> f3 = blockingJobInQueue.scheduleBuild2(0);
 
-        System.out.println("wait till is in queue...");
         while(Jenkins.getInstance().getQueue().getBuildableItems().isEmpty()) {
-            System.out.print(".");
+            TimeUnit.MILLISECONDS.sleep(10);
         }
-        System.out.println("blocking job in queue: "+ ((Queue.Item)Jenkins.getInstance().getQueue().getBuildableItems().get(0)).task.getDisplayName());
 
         FreeStyleProject blockedJob = this.createFreeStyleProject("blockedJob");
         blockedJob.setAssignedLabel(label);
         blockedJob.getBuildersList().add(new Shell("sleep 5"));
-        System.out.println("starting blocked job... " + Jenkins.getInstance().getQueue().getBuildableItems().size());
         Future<FreeStyleBuild> f4 = blockedJob.scheduleBuild2(0);
-        System.out.println("started... queue: " + Jenkins.getInstance().getQueue().getBuildableItems().size());
 
         BlockingJobsInQueueMonitor monitor = new BlockingJobsInQueueMonitor(blockingJobInQueueName);
-        System.out.println("monitoring... queue: " + Jenkins.getInstance().getQueue().getBuildableItems().size());
         SubTask blockingJob = monitor.getBlockingJob(null);
-        System.out.println("done... queue: " + Jenkins.getInstance().getQueue().getBuildableItems().size());
-        System.out.println("blocking job: " + blockingJob);
         assertNotNull(blockingJob);
-
-        System.out.println("f1: " + f1.isDone());
-        System.out.println("f2: " + f2.isDone());
-        System.out.println("f3: " + f3.isDone());
-        System.out.println("f4: " + f4.isDone());
-
-        System.out.println(! (f1.isDone() && f2.isDone()) && f3.isDone() && f4.isDone());
 
         // wait until blocking job stopped
         while(! (f1.isDone() && f2.isDone() && f3.isDone() && f4.isDone())) {
-            System.out.println("f1: " + f1.isDone());
-            System.out.println("f2: " + f2.isDone());
-            System.out.println("f3: " + f3.isDone());
-            System.out.println("f4: " + f4.isDone());
             TimeUnit.SECONDS.sleep(1);
         }
 
