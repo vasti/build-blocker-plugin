@@ -27,6 +27,15 @@ public class BlockingJobsInExecutionMonitor extends BlockingJobsMonitorImpl impl
     }
 
     /**
+     * Constructor using the already splitted blocking jobs list.
+     * @param blockingJobs
+     */
+    public BlockingJobsInExecutionMonitor(List<String> blockingJobs) {
+        super("");
+        this.setBlockingJobs(blockingJobs);
+    }
+
+    /**
      * Returns the name of the first blocking job. If not found, it returns null.
      *
      * @param item The queue item for which we are checking whether it can run or not.

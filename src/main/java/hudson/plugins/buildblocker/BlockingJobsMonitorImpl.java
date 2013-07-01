@@ -70,49 +70,16 @@ public class BlockingJobsMonitorImpl implements BlockingJobsMonitor {
             return null;
         }
 
-        Computer[] computers = Jenkins.getInstance().getComputers();
-
-        for (Computer computer : computers) {
-            List<Executor> executors = computer.getExecutors();
-
-            executors.addAll(computer.getOneOffExecutors());
-
-            for (Executor executor : executors) {
-                if(executor.isBusy()) {
-                    Queue.Executable currentExecutable = executor.getCurrentExecutable();
-
-                    SubTask subTask = currentExecutable.getParent();
-                    Queue.Task task = subTask.getOwnerTask();
-
-                    if (task instanceof MatrixConfiguration) {
-                        task = ((MatrixConfiguration) task).getParent();
-                    }
-
-                    for (String blockingJob : this.blockingJobs) {
-                        if(task.getFullDisplayName().matches(blockingJob)) {
-                            return subTask;
-                        }
-                    }
-                }
-            }
+        BlockingJobsInExecutionMonitor executionMonitor = new BlockingJobsInExecutionMonitor(this.blockingJobs);
+        SubTask blockingJob = executionMonitor.getBlockingJob(item);
+        if(blockingJob != null) {
+            return blockingJob;
         }
 
-        /**
-         * check the list of items that have
-         * already been approved for building
-         * (but haven't actually started yet)
-         */
-        List<Queue.BuildableItem> buildableItems
-            = Jenkins.getInstance().getQueue().getBuildableItems();
-
-        for (Queue.BuildableItem buildableItem : buildableItems) {
-        	if(item != buildableItem) {
-	            for (String blockingJob : this.blockingJobs) {
-	                if(buildableItem.task.getFullDisplayName().matches(blockingJob)) {
-	                    return buildableItem.task;
-	                }
-	            }
-        	}
+        BlockingJobsInQueueMonitor queueMonitor = new BlockingJobsInQueueMonitor(this.blockingJobs);
+        blockingJob = queueMonitor.getBlockingJob(item);
+        if(blockingJob != null) {
+            return blockingJob;
         }
 
         return null;
@@ -124,5 +91,14 @@ public class BlockingJobsMonitorImpl implements BlockingJobsMonitor {
      */
     public List<String> getBlockingJobs() {
         return blockingJobs;
+    }
+
+    /**
+     * Sets the blocking jobs from sub classes
+     * @param blockingJobs the list of blocking jobs as regular expressions.
+     *
+     */
+    public void setBlockingJobs(List<String> blockingJobs) {
+        this.blockingJobs = blockingJobs;
     }
 }
