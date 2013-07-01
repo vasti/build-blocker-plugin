@@ -38,14 +38,10 @@ public class BlockingJobsInQueueMonitor extends BlockingJobsMonitorImpl implemen
          */
         List<Queue.BuildableItem> buildableItems
                 = Jenkins.getInstance().getQueue().getBuildableItems();
-        System.out.println(buildableItems);
 
         for (Queue.BuildableItem buildableItem : buildableItems) {
-            System.out.println(buildableItem);
             if(item != buildableItem) {
-                System.out.println(this.getBlockingJobs());
                 for (String blockingJob : this.getBlockingJobs()) {
-                    System.out.println(blockingJob);
                     if(buildableItem.task.getFullDisplayName().matches(blockingJob)) {
                         return buildableItem.task;
                     }
