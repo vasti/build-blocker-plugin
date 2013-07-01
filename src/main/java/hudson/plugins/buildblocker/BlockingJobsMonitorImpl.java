@@ -24,12 +24,8 @@
 
 package hudson.plugins.buildblocker;
 
-import hudson.matrix.MatrixConfiguration;
-import hudson.model.Computer;
-import hudson.model.Executor;
 import hudson.model.Queue;
 import hudson.model.queue.SubTask;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;

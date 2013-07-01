@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Unit tests
@@ -90,6 +91,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
 
         while(!(future1.isDone() && future2.isDone() && future3.isDone())) {
             // wait until jobs are done.
+            TimeUnit.MILLISECONDS.sleep(100);
         }
     }
 
@@ -118,6 +120,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
         while ( !theFuture1.isDone() || !theFuture2.isDone() )
         {
             // let the jobs process
+            TimeUnit.MILLISECONDS.sleep(100);
         }
 
         // check if job2 was not started before job1 was finished
@@ -176,7 +179,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
      * @return the future object for a newly created project
      * @throws IOException
      */
-    private Future<FreeStyleBuild> createBlockingProject(String blockingJobName, Shell shell, Label label) throws IOException {
+    private Future<FreeStyleBuild> createBlockingProject(String blockingJobName, Shell shell, Label label) throws IOException, InterruptedException {
         FreeStyleProject blockingProject = this.createFreeStyleProject(blockingJobName);
         blockingProject.setAssignedLabel(label);
 
@@ -185,6 +188,7 @@ public class BuildBlockerQueueTaskDispatcherTest extends HudsonTestCase {
 
         while(! blockingProject.isBuilding()) {
             // wait until job is started
+            TimeUnit.MILLISECONDS.sleep(100);
         }
 
         return future;
