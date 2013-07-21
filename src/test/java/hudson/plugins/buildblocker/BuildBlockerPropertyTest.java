@@ -93,10 +93,13 @@ public class BuildBlockerPropertyTest extends HudsonTestCase {
         assertNull(property.getBlockingJobs());
 
         // json data in request: "{\"useBuildBlocker\":{\"blockingJobs\":\".*ocki.*\"}}"
-        String key = "blockingJobs";
-        String value = ".*ocki.*";
+        String blockingJobsKey = "blockingJobs";
+        String blockingJobsValue = ".*ocki.*";
 
-        subMap.put(key, value);
+        subMap.put(blockingJobsKey, blockingJobsValue);
+
+        subMap.put("monitorJobsInQueue", "false");
+
         formDataMap.put("useBuildBlocker", subMap);
 
         formData = new JSONObject();
@@ -105,6 +108,18 @@ public class BuildBlockerPropertyTest extends HudsonTestCase {
         property = (BuildBlockerProperty) property.getDescriptor().newInstance(staplerRequest, formData);
         assertTrue(property.isUseBuildBlocker());
         assertNotNull(property.getBlockingJobs());
-        assertEquals(value, property.getBlockingJobs());
+        assertEquals(blockingJobsValue, property.getBlockingJobs());
+        assertEquals(false, property.isMonitorJobsInQueue());
+
+        subMap.put("monitorJobsInQueue", "true");
+
+        formDataMap.put("useBuildBlocker", subMap);
+
+        formData = new JSONObject();
+        formData.accumulateAll(formDataMap);
+
+        property = (BuildBlockerProperty) property.getDescriptor().newInstance(staplerRequest, formData);
+        assertTrue(property.isUseBuildBlocker());
+        assertEquals(true, property.isMonitorJobsInQueue());
     }
 }

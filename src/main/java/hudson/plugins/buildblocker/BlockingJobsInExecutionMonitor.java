@@ -31,6 +31,7 @@ import hudson.model.Queue;
 import hudson.model.queue.SubTask;
 import jenkins.model.Jenkins;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ import java.util.List;
  *
  * The first hit returns the blocking job's name.
  */
-public class BlockingJobsInExecutionMonitor extends BlockingJobsMonitorImpl implements BlockingJobsMonitor {
+public class BlockingJobsInExecutionMonitor extends AbstractBlockingJobsMonitor implements BlockingJobsMonitor {
     /**
      * Constructor using the job configuration entry for blocking jobs
      *
@@ -67,6 +68,10 @@ public class BlockingJobsInExecutionMonitor extends BlockingJobsMonitorImpl impl
      * @return the name of the first blocking job.
      */
     public SubTask getBlockingJob(Queue.Item item) {
+        if(this.getBlockingJobs() == null || this.getBlockingJobs().isEmpty()) {
+            return null;
+        }
+
         Computer[] computers = Jenkins.getInstance().getComputers();
 
         for (Computer computer : computers) {

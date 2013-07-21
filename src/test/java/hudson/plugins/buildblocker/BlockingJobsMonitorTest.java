@@ -73,19 +73,19 @@ public class BlockingJobsMonitorTest extends HudsonTestCase {
             TimeUnit.SECONDS.sleep(1);
         }
 
-        BlockingJobsMonitorImpl blockingJobsMonitorUsingNull = new BlockingJobsMonitorImpl(null);
+        AbstractBlockingJobsMonitor blockingJobsMonitorUsingNull = new BlockingJobsInExecutionMonitor("");
         assertNull(blockingJobsMonitorUsingNull.getBlockingJob(null));
 
-        BlockingJobsMonitorImpl blockingJobsMonitorNotMatching = new BlockingJobsMonitorImpl("xxx");
+        AbstractBlockingJobsMonitor blockingJobsMonitorNotMatching = new BlockingJobsInExecutionMonitor("xxx");
         assertNull(blockingJobsMonitorNotMatching.getBlockingJob(null));
 
-        BlockingJobsMonitorImpl blockingJobsMonitorUsingFullName = new BlockingJobsMonitorImpl(blockingJobName);
+        AbstractBlockingJobsMonitor blockingJobsMonitorUsingFullName = new BlockingJobsInExecutionMonitor(blockingJobName);
         assertEquals(blockingJobName, blockingJobsMonitorUsingFullName.getBlockingJob(null).getDisplayName());
 
-        BlockingJobsMonitorImpl blockingJobsMonitorUsingRegex = new BlockingJobsMonitorImpl("block.*");
+        AbstractBlockingJobsMonitor blockingJobsMonitorUsingRegex = new BlockingJobsInExecutionMonitor("block.*");
         assertEquals(blockingJobName, blockingJobsMonitorUsingRegex.getBlockingJob(null).getDisplayName());
 
-        BlockingJobsMonitorImpl blockingJobsMonitorUsingMoreLines = new BlockingJobsMonitorImpl("xxx\nblock.*\nyyy");
+        AbstractBlockingJobsMonitor blockingJobsMonitorUsingMoreLines = new BlockingJobsInExecutionMonitor("xxx\nblock.*\nyyy");
         assertEquals(blockingJobName, blockingJobsMonitorUsingMoreLines.getBlockingJob(null).getDisplayName());
 
         // wait until blocking job stopped

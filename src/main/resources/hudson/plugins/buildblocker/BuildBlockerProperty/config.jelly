@@ -27,5 +27,8 @@
         <f:entry title="${%Blocking jobs}" field="blockingJobs">
             <f:textarea />
         </f:entry>
+        <f:entry field="monitorJobsInQueue" title="${%Monitor queue, too}">
+            <f:checkbox />
+        </f:entry>
     </f:optionalBlock>
 </j:jelly>

@@ -77,7 +77,15 @@ public class BuildBlockerQueueTaskDispatcher extends QueueTaskDispatcher {
             if(property != null) {
                 String blockingJobs = property.getBlockingJobs();
 
-                SubTask subTask = new BlockingJobsMonitorImpl(blockingJobs).getBlockingJob(item);
+                boolean monitorJobsInQueue = property.isMonitorJobsInQueue();
+
+                BlockingJobsInExecutionMonitor executionMonitor = new BlockingJobsInExecutionMonitor(blockingJobs);
+                SubTask subTask = executionMonitor.getBlockingJob(item);
+
+                if(subTask == null && monitorJobsInQueue) {
+                    BlockingJobsInQueueMonitor queueMonitor = new BlockingJobsInQueueMonitor(blockingJobs);
+                    subTask = queueMonitor.getBlockingJob(item);
+                }
 
                 if(subTask != null) {
                     if(subTask instanceof MatrixConfiguration) {

@@ -56,6 +56,11 @@ public class BuildBlockerProperty extends JobProperty<Job<?, ?>> {
     public static final String BLOCKING_JOBS_KEY = "blockingJobs";
 
     /**
+     * monitor queue form field name
+     */
+    public static final String MONITOR_JOBS_IN_QUEUE_KEY = "monitorJobsInQueue";
+
+    /**
      * flag if build blocker should be used
      */
     private boolean useBuildBlocker;
@@ -64,6 +69,11 @@ public class BuildBlockerProperty extends JobProperty<Job<?, ?>> {
      * the job names that block the build if running
      */
     private String blockingJobs;
+
+    /**
+     * flag to monitor jobs in queue, too. Default is true
+     */
+    private boolean monitorJobsInQueue;
 
     /**
      * Returns true if the build blocker is enabled.
@@ -96,6 +106,22 @@ public class BuildBlockerProperty extends JobProperty<Job<?, ?>> {
      */
     public void setBlockingJobs(String blockingJobs) {
         this.blockingJobs = blockingJobs;
+    }
+
+    /**
+     * Returns the flag to monitor jobs in queue.
+     * @return the flag to monitor jobs in queue
+     */
+    public boolean isMonitorJobsInQueue() {
+        return monitorJobsInQueue;
+    }
+
+    /**
+     * Sets the flag to monitor jobs in queue
+     * @param monitorJobsInQueue true to monitor jobs in queue
+     */
+    public void setMonitorJobsInQueue(boolean monitorJobsInQueue) {
+        this.monitorJobsInQueue = monitorJobsInQueue;
     }
 
     /**
@@ -137,6 +163,7 @@ public class BuildBlockerProperty extends JobProperty<Job<?, ?>> {
                 try {
                     buildBlockerProperty.setUseBuildBlocker(true);
                     buildBlockerProperty.setBlockingJobs(formData.getJSONObject(USE_BUILD_BLOCKER).getString(BLOCKING_JOBS_KEY));
+                    buildBlockerProperty.setMonitorJobsInQueue(formData.getJSONObject(USE_BUILD_BLOCKER).getBoolean(MONITOR_JOBS_IN_QUEUE_KEY));
 
                 } catch(JSONException e) {
                     buildBlockerProperty.setUseBuildBlocker(false);

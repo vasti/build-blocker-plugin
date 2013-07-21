@@ -37,7 +37,7 @@ import java.util.List;
  *
  * The first hit returns the blocking job's name.
  */
-public class BlockingJobsInQueueMonitor extends BlockingJobsMonitorImpl implements BlockingJobsMonitor {
+public class BlockingJobsInQueueMonitor extends AbstractBlockingJobsMonitor implements BlockingJobsMonitor {
     /**
      * Constructor using the job configuration entry for blocking jobs
      *

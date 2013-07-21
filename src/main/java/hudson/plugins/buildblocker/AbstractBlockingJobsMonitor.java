@@ -38,7 +38,7 @@ import java.util.List;
  *
  * The first hit returns the blocking job's name.
  */
-public class BlockingJobsMonitorImpl implements BlockingJobsMonitor {
+abstract class AbstractBlockingJobsMonitor implements BlockingJobsMonitor {
 
     /**
      * the list of regular expressions from the job configuration
@@ -49,7 +49,7 @@ public class BlockingJobsMonitorImpl implements BlockingJobsMonitor {
      * Constructor using the job configuration entry for blocking jobs
      * @param blockingJobs line feed separated list og blocking jobs
      */
-    public BlockingJobsMonitorImpl(String blockingJobs) {
+    public AbstractBlockingJobsMonitor(String blockingJobs) {
         if(StringUtils.isNotBlank(blockingJobs)) {
             this.blockingJobs = Arrays.asList(blockingJobs.split("\n"));
         }
@@ -61,25 +61,7 @@ public class BlockingJobsMonitorImpl implements BlockingJobsMonitor {
      *        or null if we are not checking a job from the queue (currently only used by testing).
      * @return the name of the first blocking job.
      */
-    public SubTask getBlockingJob(Queue.Item item) {
-        if(this.blockingJobs == null) {
-            return null;
-        }
-
-        BlockingJobsInExecutionMonitor executionMonitor = new BlockingJobsInExecutionMonitor(this.blockingJobs);
-        SubTask blockingJob = executionMonitor.getBlockingJob(item);
-        if(blockingJob != null) {
-            return blockingJob;
-        }
-
-        BlockingJobsInQueueMonitor queueMonitor = new BlockingJobsInQueueMonitor(this.blockingJobs);
-        blockingJob = queueMonitor.getBlockingJob(item);
-        if(blockingJob != null) {
-            return blockingJob;
-        }
-
-        return null;
-    }
+    abstract public SubTask getBlockingJob(Queue.Item item);
 
     /**
      * Returns the list of blocking jobs reg exp.
