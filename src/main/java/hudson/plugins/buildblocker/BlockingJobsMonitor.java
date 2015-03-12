@@ -89,8 +89,12 @@ public class BlockingJobsMonitor {
                     }
 
                     for (String blockingJob : this.blockingJobs) {
-                        if(task.getFullDisplayName().matches(blockingJob)) {
-                            return subTask;
+                        try {
+                          if(task.getFullDisplayName().matches(blockingJob)) {
+                              return subTask;
+                          }
+                        } catch (java.util.regex.PatternSyntaxException pse) {
+                          return null;
                         }
                     }
                 }
