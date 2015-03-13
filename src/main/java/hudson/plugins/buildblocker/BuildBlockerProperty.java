@@ -31,9 +31,15 @@ import hudson.model.JobPropertyDescriptor;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
-
+import org.kohsuke.stapler.QueryParameter;
+import hudson.util.FormValidation;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Job property that stores the line feed separated list of
@@ -145,6 +151,30 @@ public class BuildBlockerProperty extends JobProperty<Job<?, ?>> {
             }
 
             return buildBlockerProperty;
+        }
+
+        /**
+        * Chcek the regular expression entered by the user
+        */
+        public FormValidation doCheckRegex(@QueryParameter final String blockingJobs) {
+            List<String> listJobs = null;
+            if(StringUtils.isNotBlank(blockingJobs)) {
+              listJobs = Arrays.asList(blockingJobs.split("\n"));
+            }
+            if (listJobs!=null) {
+              for (String blockingJob : listJobs) {
+                try {
+                    Pattern.compile(blockingJob);
+                } catch (PatternSyntaxException pse) {
+                    return FormValidation.error("Invalid regular expression [" +
+                                                blockingJob + "] exception: " +
+                                                pse.getDescription());
+                }
+              }
+              return FormValidation.ok();
+            }else{
+              return FormValidation.ok();
+            }
         }
 
         /**
