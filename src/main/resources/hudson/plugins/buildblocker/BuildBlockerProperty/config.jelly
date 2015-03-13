@@ -27,5 +27,11 @@
         <f:entry title="${%Blocking jobs}" field="blockingJobs">
             <f:textarea />
         </f:entry>
+        <f:entry title="">
+        <div align="right">
+        <f:validateButton title="Validate Regex" progress="Checking..."
+           method="checkRegex" with="blockingJobs" />
+         </div>
+         </f:entry>
     </f:optionalBlock>
 </j:jelly>
