@@ -88,6 +88,9 @@ public class BlockingJobsMonitorTest extends HudsonTestCase {
         BlockingJobsMonitor blockingJobsMonitorUsingMoreLines = new BlockingJobsMonitor("xxx\nblock.*\nyyy");
         assertEquals(blockingJobName, blockingJobsMonitorUsingMoreLines.getBlockingJob(null).getDisplayName());
 
+        BlockingJobsMonitor blockingJobsMonitorUsingWrongRegex = new BlockingJobsMonitor("*BW2S.*QRT.");
+        assertNull(blockingJobsMonitorUsingWrongRegex.getBlockingJob(null));
+
         // wait until blocking job stopped
         while (! future.isDone()) {
             TimeUnit.SECONDS.sleep(1);
