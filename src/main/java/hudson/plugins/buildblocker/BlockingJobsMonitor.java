@@ -25,10 +25,12 @@
 package hudson.plugins.buildblocker;
 
 import hudson.matrix.MatrixConfiguration;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import hudson.model.Computer;
 import hudson.model.Executor;
 import hudson.model.Queue;
 import hudson.model.AbstractProject;
+import hudson.model.Job;
 import hudson.model.queue.SubTask;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
@@ -89,11 +91,18 @@ public class BlockingJobsMonitor {
                         task = ((MatrixConfiguration) task).getParent();
                     }
 
-                    AbstractProject project = (AbstractProject) task;
+                    String name;
+                    if (task instanceof WorkflowJob) {
+                        name = ((Job) task).getFullName();
+                    }
+                    else {
+                        AbstractProject project = (AbstractProject) task;
+                        name = project.getFullName();
+                    }
 
                     for (String blockingJob : this.blockingJobs) {
                         try {
-                            if(project.getFullName().matches(blockingJob)) {
+                            if(name.matches(blockingJob)) {
                                 return subTask;
                             }
                         } catch (java.util.regex.PatternSyntaxException pse) {

@@ -88,6 +88,14 @@
     <maven.version>3.0.4</maven.version>
   </properties>
 
+  <dependencies>
+    <dependency>
+        <groupId>org.jenkins-ci.plugins.workflow</groupId>
+        <artifactId>workflow-job</artifactId>
+        <version>1.6</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <pluginManagement>
       <plugins>
